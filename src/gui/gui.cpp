@@ -1,18 +1,9 @@
 // main.cpp
+#include "gui.h"
 
-#include <SFML/Graphics.hpp>
-#include "ChessGrid.h"
-
-const int tileSize = 80;
-const int gridSize = 8;
-
-int main() {
-    uint size = tileSize * gridSize;
-    sf::RenderWindow window(sf::VideoMode(size, size, 1), "Racing Kings Chess");
-    // Set the framerate to 30 fps
-    window.setFramerateLimit(30);
-
-    ChessGrid chessGrid(0, 0, size, size);
+int runGui(ChessGrid& chessGrid) {
+    sf::RenderWindow window(sf::VideoMode(chessGrid.getWidth(), chessGrid.getHeight(), 1), "Racing Kings Chess");
+    window.setFramerateLimit(30); // Set the framerate to 30 fps
 
     while (window.isOpen()) {
         sf::Event event;

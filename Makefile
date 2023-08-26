@@ -22,7 +22,7 @@ DEPENDSC := $(patsubst %.cpp,%.d,$(SRCC))
 HEADERS = $(shell find $(SRCDIR) -type f -name "*.h")
 
 LIBSVGSRC = $(shell find $(LIBDIR)/sf-svg/SFC -type f -name "*.cpp")
-LIBSRC = $(LIBDIR)/jsonLoader.c $(LIBDIR)/jsmn/jsmn.c 
+LIBSRC = $(LIBDIR)/jsonLoader.c $(LIBDIR)/jsmn.c
 LIBSRCPP = $(LIBSVGSRC)
 
 # the OBJC from SRCC are in the folder ${OBJECTDIR} and have the same name and path from there SRCC
@@ -46,11 +46,11 @@ ${BINDIR}/$(BIN): ${OBJC} ${OBJCPP}
 	$(CCPP) ${OBJC} ${OBJCPP} $(CPPFLAGS) -o $@ ${IFLAGS} ${CPPLIBS}
 
 ${OBJC}: ${SRCC} ${HEADERS}
-	mkdir -p ${basename $@}
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) ${@:${OBJECTDIR}/%.o=%.c} -c -o $@ ${IFLAGS} ${CLIBS}
 
 ${OBJCPP}: ${SRCCPP} ${HEADERS}
-	mkdir -p ${basename $@}
+	mkdir -p $(@D)
 	$(CCPP) $(CPPFLAGS) ${@:${OBJECTDIR}/%.o=%.cpp} -c -o $@ ${IFLAGS} ${CPPLIBS}
 
 clean:

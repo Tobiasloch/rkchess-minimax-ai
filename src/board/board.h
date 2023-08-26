@@ -130,7 +130,7 @@ void movePlayer(board* b, move* m);
 char* boardToFen(char* string, board* board);
 void initMove(move* m, uint64_t from, uint64_t to);
 int boardEquals(struct board* b1, struct board* b2);
-
+void positionToUCI(char* buffer, int position);
 
 #ifdef __cplusplus
 }

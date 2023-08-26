@@ -451,6 +451,10 @@ char* boardToFen(char* string, board* board) {
     return string;
 }
 
+void positionToUCI(char* buffer, int position) {
+    strcpy(buffer, indexToUci(position));
+}
+
 uint64_t rand_uint64_slow(void) {
   uint64_t r = 0;
   for (int i=0; i<64; i++) {

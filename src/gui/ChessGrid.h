@@ -39,6 +39,7 @@ public:
     // virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     void setBoard(struct board* board);
+    void setBoard(char* fen);
     void setPiece(int row, int col, int character);
 
     // Events
@@ -63,11 +64,17 @@ public:
 
     void checkForEndGame();
 
+    void doMove(int from_row, int from_col, int to_row, int to_col);
+    void doMove(struct move* m);
 
     struct board* getBoard() { return &board_; }
 
-    int playerTypes_[2] = {HUMAN_PLAYER, AI_PLAYER};
+    // getter for height and width
+    int getWidth() const { return width_; }
+    int getHeight() const { return height_; }
 
+    int playerTypes_[2] = {HUMAN_PLAYER, AI_PLAYER};
+    uint verbosity = 0; // 1: print moves, 2: print board and moves
 private:
     int margin_ = 20;
     ChessField fields_[8][8];

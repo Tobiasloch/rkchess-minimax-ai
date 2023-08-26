@@ -32,7 +32,7 @@ void ChessGrid::loadTextures() {
             svgImages_[i].loadFromFile(file);
             sf::Image image = svgImages_[i].rasterize(svgFactor_);
             textures_[i].loadFromImage(image);
-            std::cout << "texture size: (" << textures_[i].getSize().x << "," << textures_[i].getSize().y << ")" << std::endl;
+            // std::cout << "texture size: (" << textures_[i].getSize().x << "," << textures_[i].getSize().y << ")" << std::endl;
         #else
             textures_[i].loadFromFile(file);
         #endif
@@ -147,7 +147,6 @@ ChessGrid::ChessGrid(
     endGameText_.setCharacterSize(getTileSizeX());
     endGameText_.setFont(font_);
     endGameText_.setFillColor(sf::Color::Red);
-    checkForEndGame();
 
     setBoard(&board_);
 }
@@ -182,15 +181,22 @@ void ChessGrid::draw(sf::RenderWindow& window) {
     }
 }
 
+void ChessGrid::setBoard(char* fen) {
+    parse(fen, &board_);
+    setBoard(&board_);
+}
 void ChessGrid::setBoard(struct board* board) {
+    board_ = *board;
+
     resetActiveFields();
     for (int col = 0; col < getGridSize(); ++col) {
         for (int row = 0; row < getGridSize(); ++row) {
             uint8_t pos = to_position(row, col);
-            int character = getField(board, pos);
+            int character = getField(&board_, pos);
             setPiece(row, col, character);
         }
     }
+    checkForEndGame();
 }
 
 ChessField* ChessGrid::fieldFromPixels(int x, int y) {
@@ -254,21 +260,9 @@ void doMoveAI(ChessGrid& grid) {
     struct move m;
     struct board* b = grid.getBoard();
     bestMoveMinimax(b, &m, 9, 5000);
-    int character = getField(b, m.from);
-
-    movePlayer(b, &m);
-
-    int from_row = grid.getGridSize()-1 - (m.from / grid.getGridSize());
-    int from_col = m.from % grid.getGridSize();
-
-    int to_row = grid.getGridSize()-1 - (m.to / grid.getGridSize());
-    int to_col = m.to % grid.getGridSize();
-
-    grid.setPiece(to_row, to_col, character);
-    grid.setPiece(from_row, from_col, EMPTYFIELD);
+    grid.doMove(&m);
 
     freeMinimaxMemory(0);
-    grid.checkForEndGame();
 }
 
 void ChessGrid::updateCalculatingAnimation(sf::Text& text) {
@@ -321,6 +315,48 @@ void ChessGrid::resetActiveFields() {
     }
 }
 
+
+
+void ChessGrid::doMove(int from_row, int from_col, int to_row, int to_col) {
+    struct move m;
+    m.from = to_position(from_row, from_col);
+    m.to = to_position(to_row, to_col);
+    doMove(&m);
+}
+
+void ChessGrid::doMove(struct move* m) {
+    int character = getField(&board_, m->from);
+
+    movePlayer(&board_, m);
+
+    int from_row = getGridSize()-1 - (m->from / getGridSize());
+    int from_col = m->from % getGridSize();
+
+    int to_row = getGridSize()-1 - (m->to / getGridSize());
+    int to_col = m->to % getGridSize();
+
+    setPiece(to_row, to_col, character);
+    setPiece(from_row, from_col, EMPTYFIELD);
+
+    checkForEndGame();
+
+
+    if (verbosity > 0) {
+        char buffer_from[5];
+        char buffer_to[5];
+        positionToUCI(buffer_from, m->from);
+        positionToUCI(buffer_to, m->to);
+        std::cout << buffer_from << "->" << buffer_to;
+    } 
+    if (verbosity > 1) {
+        char fen[FEN_BUFFER_SIZE];
+        boardToFen(fen, &board_);
+        std::cout << "  fen: " << fen;
+    }
+
+    std::cout << std::endl;
+}
+
 void ChessGrid::onMouseClick(sf::Vector2i& mousePos, const sf::Window& window) {
     if (isGameOver(&board_)) return;
     
@@ -335,14 +371,7 @@ void ChessGrid::onMouseClick(sf::Vector2i& mousePos, const sf::Window& window) {
 
     if (playerTypes_[board_.player-1] == HUMAN_PLAYER) {
         if (activeField_ != NULL && active) {
-            struct move m;
-            m.from = to_position(activeField_->row_, activeField_->col_);
-            m.to = to_position(field->row_, field->col_);
-
-            movePlayer(&board_, &m);
-
-            setPiece(field->row_, field->col_, activeField_->character_);
-            setPiece(activeField_->row_, activeField_->col_, EMPTYFIELD);
+            doMove(activeField_->row_, activeField_->col_, field->row_, field->col_);
 
             resetCalculatingAnimation();
             if (playerTypes_[board_.player-1] == AI_PLAYER) {
