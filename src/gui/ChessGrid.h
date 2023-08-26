@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <iostream>
+#include <chrono>
 
 #include "sf-svg/SFC/Svg.hpp"
 
@@ -27,11 +28,7 @@ public:
             int x = 0,
             int y = 0,
             int width = 640,
-            int height = 640,
-            const sf::Color& lightColor = sf::Color(240, 217, 181),
-            const sf::Color& darkColor = sf::Color(181, 135, 99),
-            const sf::Color& hoverColor = sf::Color(255, 255, 200)
-            );
+            int height = 640);
 
     void loadTextures();
     #ifdef SVGIMAGES
@@ -56,17 +53,31 @@ public:
 
     int getGridSize() const { return CHESS_GRID_SIZE; }
 
-    int getTileSizeX() const { return width_ / getGridSize(); }
-    int getTileSizeY() const { return height_ / getGridSize(); }
+    int getTileSizeX() const { return (width_-(2*margin_)) / getGridSize(); }
+    int getTileSizeY() const { return (height_-(2*margin_)) / getGridSize(); }
+    
+    void updateCalculatingAnimation(sf::Text& text);
+    void resetCalculatingAnimation();
+
+    void resetActiveFields();
+
+    void checkForEndGame();
 
 
     struct board* getBoard() { return &board_; }
 
+    int playerTypes_[2] = {HUMAN_PLAYER, AI_PLAYER};
+
 private:
-    int tileSize_;
+    int margin_ = 20;
     ChessField fields_[8][8];
     sf::RectangleShape tiles_[8][8];
-    sf::Sprite pieces_[8][8]; // Array to hold the piece sprites
+    sf::RectangleShape background_;
+    sf::Font font_;
+    sf::Text fieldLabels_[2][8];
+    sf::Text currentPlayerText_[2];
+    sf::Text endGameText_;
+    
 
     #ifdef SVGIMAGES
         float svgFactor_ = 6;
@@ -74,18 +85,24 @@ private:
     #endif
     sf::Texture textures_[11]; // Array to hold the piece sprites
 
-    int playerTypes_[2] = {HUMAN_PLAYER, AI_PLAYER};
     struct board board_;
 
     // parameters
-    sf::Color hoverColor_;
-    sf::Color lightColor_; // RGB: FFEED2
-    sf::Color darkColor_;
+
+    int loadingAnimationSpeed_ = 250; // milis of how often the animation changes
+    long lastLoadingAnimationExection_ = 0; // milis of how often the animation changes
+    int maxDots_ = 3; // Number of dots displayed
+    int dots_ = 0; // Number of dots displayed
+
+    sf::Color lightColor_ = sf::Color(240, 217, 181);
+    sf::Color darkColor_ = sf::Color(181, 135, 99);
+    sf::Color hoverColor_ = sf::Color(255, 255, 200);
+    // sf::Color backgroundColor_ = sf::Color(204, 138, 77);
+    sf::Color backgroundColor_ = sf::Color::Black;
+    sf::Color fieldLabelColor_ = sf::Color::White;
 
     ChessField* hoveredField_ = NULL;
     ChessField* activeField_ = NULL;
-
-    std::thread* AIThread_;
 
     int x_;
     int y_;

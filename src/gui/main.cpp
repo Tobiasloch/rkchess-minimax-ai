@@ -8,7 +8,7 @@ const int gridSize = 8;
 
 int main() {
     uint size = tileSize * gridSize;
-    sf::RenderWindow window(sf::VideoMode(size, size, 1), "Chess Grid");
+    sf::RenderWindow window(sf::VideoMode(size, size, 1), "Racing Kings Chess");
     // Set the framerate to 30 fps
     window.setFramerateLimit(30);
 
