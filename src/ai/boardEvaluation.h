@@ -26,7 +26,7 @@ struct evaluatePiece {
 } typedef evaluatePiece;
 
 // global evaluatePiece - use initEvaluatePiece() to set evaluatePiece
-evaluatePiece ep[1];
+extern evaluatePiece ep[1];
 
 void initEvaluatePiece();
 int getPstValue(uint8_t p, int8_t character, evaluatePiece* ep, int gameState);

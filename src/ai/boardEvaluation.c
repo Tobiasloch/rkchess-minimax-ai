@@ -38,6 +38,7 @@
 */
 
 int EVALUATE_PIECE_INITED = FALSE;
+evaluatePiece ep[1];
 
 // call this function before evaluateBoard(board* board) !
 void initEvaluatePiece(){

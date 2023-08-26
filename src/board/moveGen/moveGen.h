@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 #include "board/board.h"
@@ -7,4 +11,9 @@
 
 void moveGen_init(moveIterator* iterator, board* board);
 void moveGen_next(moveIterator* iterator);
-bool moveGen_isProtected(moveIterator* iterator, int figIdx);
+bool_t moveGen_isProtected(moveIterator* iterator, int figIdx);
+
+
+#ifdef __cplusplus
+}
+#endif

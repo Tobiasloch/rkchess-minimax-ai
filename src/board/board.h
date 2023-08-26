@@ -1,6 +1,10 @@
 #ifndef BOARD_H_
 #define BOARD_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -19,7 +23,8 @@ typedef enum {
     KNIGHT = 3,
     ROOK = 4,
     WHITE = 5,
-    BLACK = 6
+    BLACK = 6,
+    EMPTYFIELD = 10
 } boardContent_t;
 
 typedef enum {
@@ -115,7 +120,7 @@ char** scan(char* fen);
 char* boardRepresentation(char* string, board* board);
 void boardToMatrix(char matrix[8][9], board* board);
 board* createBoard();
-void initBoard(board* board);
+extern void initBoard(board* board);
 uint64_t hash(board* board);
 void initZobrist();
 uint8_t getField(board* board, uint8_t pos);
@@ -125,5 +130,10 @@ void movePlayer(board* b, move* m);
 char* boardToFen(char* string, board* board);
 void initMove(move* m, uint64_t from, uint64_t to);
 int boardEquals(struct board* b1, struct board* b2);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

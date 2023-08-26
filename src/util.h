@@ -7,17 +7,17 @@
 #include <sys/stat.h>
 
 
-#ifdef _DEBUG
-	#define DEBUG 1
-#else
-	#define DEBUG 0
-#endif
+// #ifdef _DEBUG
+// 	#define DEBUG 1
+// #else
+// 	#define DEBUG 0
+// #endif
 
 
-int verbosity_level;
+extern int verbosity_level;
 
 #define debugf(fmt, ...) \
-	if ( DEBUG ) { \
+	if ( _DEBUG ) { \
 		fprintf(stderr, "\e[93m[DEBUG %s:%d:%s()]\e[39m " fmt, \
 			__FILE__, __LINE__, __func__, ##__VA_ARGS__); \
 	}
@@ -52,7 +52,7 @@ int verbosity_level;
 typedef enum {
 	FALSE = 0,
 	TRUE = 1
-} bool;
+} bool_t;
 
 
 static inline void* ecalloc(unsigned int num, size_t size) {

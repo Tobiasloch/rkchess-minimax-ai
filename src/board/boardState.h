@@ -38,6 +38,6 @@ int inCheckFastOverCharacters(board* b);
 int inCheckFastCharacter(board* b, uint64_t characterMask, int index);
 int inCheckFastPlayer(board* b, int player);
 
-struct checkMasks* CHECK_MASKS[5];
+extern struct checkMasks* CHECK_MASKS[5];
 
 #endif

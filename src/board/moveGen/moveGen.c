@@ -14,7 +14,7 @@
 
 // rand() is seeded _once_ by initMinimax() in minimax.c
 // Usually with a static seed for reproducability
-bool randBool(void) {
+bool_t randBool(void) {
 	return (rand() % 2);
 }
 
@@ -502,7 +502,7 @@ void moveGen_init(moveIterator* iter, board* board) {
 
 }
 
-bool moveGen_isProtected(moveIterator* iter, int figIdx) {
+bool_t moveGen_isProtected(moveIterator* iter, int figIdx) {
 
 	// A figure is protected if it's 'hittable' by it's own figures.
 

@@ -32,6 +32,16 @@
 
 #define MAXGAMETIME (60*1000)
 
+// setting defaults
+void (*minimaxIterator)(moveIterator*);
+void (*initMoveIteratorMinimax)(moveIterator*, board*);
+int (*minimaxEvaluator)(board*);
+void (*movePlayerMinimax)(board*, struct move*);
+int (*gameOverCheckMinimax)(board*, board*);
+int (*inCheckMinimax)(struct board*);
+void (*sortMovesMinimax)(struct moveScores*, size_t);
+int minimaxHashCollisions = 0;
+
 struct boardMoveMap* bmm = NULL;
 
 int minimaxSearchRootFull = 0;

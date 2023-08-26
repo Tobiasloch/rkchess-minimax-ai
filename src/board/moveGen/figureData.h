@@ -10,7 +10,7 @@
 typedef struct {
 	ray_t directions[MAX_DIRECTIONS];
 	int directionCount;
-	bool slider;
+	bool_t slider;
 } figureData_t;
 
 struct figures_s {

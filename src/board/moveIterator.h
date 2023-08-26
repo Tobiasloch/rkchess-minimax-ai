@@ -14,7 +14,7 @@ struct moveIterator {
 
 	// Reference to the current global board
 	// Set on initialization. Do not edit content.
-	board* board;
+	struct board* board;
 
 	/* OLD MOVEGEN (validMoves.h) */
 

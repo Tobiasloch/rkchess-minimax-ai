@@ -1,0 +1,6 @@
+[submodule "sf-svg"]
+	path = lib/sf-svg
+	url = git@github.com:kamirr/sf-svg.git
+[submodule "uthash"]
+	path = lib/uthash
+	url = https://github.com/troydhanson/uthash

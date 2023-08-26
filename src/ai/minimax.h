@@ -2,6 +2,10 @@
 #define MNIMAX_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // here you can specify the minimax algorithm
 
 // this macro says that the minimax algorithm should be iterative
@@ -67,8 +71,8 @@ struct minimaxReturn {
 };
 
 
-int goDown[16];
-int minimaxTimeCaps[16];
+extern int goDown[16];
+extern int minimaxTimeCaps[16];
 
 struct minimaxReturn alphabeta(board* b, move* bestMove, long maxDepth, struct boardMoveMap** bmm, int beta, double end);
 int bestMoveMinimax(board* b, move* bestMove, int maxDepth, long maxTime);
@@ -82,22 +86,28 @@ void minimaxMove(board* b, move* bestMove, long timeLeft);
 void initMinimax();
 void listIterator(moveIterator* iter);
 void initListIterator(moveIterator* iter, board* b);
+void quickSortMinimax(struct moveScores* moves, size_t len);
 
-int (*minimaxEvaluator)(board*);
-void (*minimaxIterator)(moveIterator*);
-void (*movePlayerMinimax)(board*, struct move*);
-int (*gameOverCheckMinimax)(board*, board*);
-void (*sortMovesMinimax)(struct moveScores*, size_t);
-int (*inCheckMinimax)(struct board*);
-int (*inCheckPlayerMinimax)(struct board*, int);
-int (*inCheckCharacterMinimax)(struct board*, uint64_t, int);
-void (*initMoveIteratorMinimax)(moveIterator*, board*);
+extern int (*minimaxEvaluator)(board*);
+extern void (*minimaxIterator)(moveIterator*);
+extern void (*movePlayerMinimax)(board*, struct move*);
+extern int (*gameOverCheckMinimax)(board*, board*);
+extern void (*sortMovesMinimax)(struct moveScores*, size_t);
+extern int (*inCheckMinimax)(struct board*);
+extern int (*inCheckPlayerMinimax)(struct board*, int);
+extern int (*inCheckCharacterMinimax)(struct board*, uint64_t, int);
+extern void (*initMoveIteratorMinimax)(moveIterator*, board*);
 
-struct boardMoveMap* bmm;
-int printMinimaxDebugOutput;
-int maxDepthMinimax;
-long INITIAL_MINIMAX_SEED;
-int minimaxSearchRootFull;
-int minimaxHashCollisions;
+extern struct boardMoveMap* bmm;
+extern int printMinimaxDebugOutput;
+extern int maxDepthMinimax;
+extern long INITIAL_MINIMAX_SEED;
+extern int minimaxSearchRootFull;
+extern int minimaxHashCollisions;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // header
+

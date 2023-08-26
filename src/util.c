@@ -1,5 +1,7 @@
 #include "util.h"
 
+int verbosity_level;
+
 #ifdef WIN32
 #include <windows.h>
 double get_time()
