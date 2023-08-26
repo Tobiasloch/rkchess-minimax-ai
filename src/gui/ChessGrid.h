@@ -2,6 +2,7 @@
 #define CHESS_GRID_H
 
 #include "board/board.h"
+#include "board/boardState.h"
 #include "board/moveIterator.h"
 #include "board/moveGen/moveGen.h"
 #include "ai/minimax.h"
@@ -64,6 +65,7 @@ public:
 
     void checkForEndGame();
 
+    void startAI();
     void doMove(int from_row, int from_col, int to_row, int to_col);
     void doMove(struct move* m);
 
@@ -73,7 +75,11 @@ public:
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
 
-    int playerTypes_[2] = {HUMAN_PLAYER, AI_PLAYER};
+    // setter for playertypes
+    void setPlayerType(int player, int type);
+    // getter for playertypes
+    int getPlayerType(int player) const { return playerTypes_[player]; }
+
     uint verbosity = 0; // 1: print moves, 2: print board and moves
 private:
     int margin_ = 20;
@@ -87,12 +93,13 @@ private:
     
 
     #ifdef SVGIMAGES
-        float svgFactor_ = 6;
+        float svgFactor_ = 4;
         sfc::SVGImage svgImages_[10]; // Array to hold the piece sprites
     #endif
     sf::Texture textures_[11]; // Array to hold the piece sprites
 
     struct board board_;
+    int playerTypes_[2] = {HUMAN_PLAYER, AI_PLAYER};
 
     // parameters
 

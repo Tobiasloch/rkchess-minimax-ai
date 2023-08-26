@@ -32,7 +32,7 @@ void ChessGrid::loadTextures() {
             svgImages_[i].loadFromFile(file);
             sf::Image image = svgImages_[i].rasterize(svgFactor_);
             textures_[i].loadFromImage(image);
-            // std::cout << "texture size: (" << textures_[i].getSize().x << "," << textures_[i].getSize().y << ")" << std::endl;
+            std::cout << "texture size: (" << textures_[i].getSize().x << "," << textures_[i].getSize().y << ")" << std::endl;
         #else
             textures_[i].loadFromFile(file);
         #endif
@@ -59,6 +59,7 @@ ChessGrid::ChessGrid(
     : x_(x), y_(y), width_(width), height_(height) {
     parse((char*)INITIAL_RACING_KINGS_FEN, &board_);
     initMinimax();
+    margin_ = 0.04 * std::min(width_, height_);
 
     // load the textures
     loadTextures();
@@ -119,28 +120,7 @@ ChessGrid::ChessGrid(
 
     // init current player text
     for (int i = 0; i < 2; i++) {
-        sf::Text& text = currentPlayerText_[i];
-        text.setFont(font_);
-        text.setCharacterSize(margin_/2);
-        text.setFillColor(fieldLabelColor_);
-        text.setStyle(sf::Text::Bold);
-
-        std::string str = "";
-        if ((playerTypes_[0] == HUMAN_PLAYER && playerTypes_[1] == AI_PLAYER) ||
-            (playerTypes_[0] == AI_PLAYER && playerTypes_[1] == HUMAN_PLAYER)) { // one player against AI
-            str.append((playerTypes_[i] == HUMAN_PLAYER) ? "Your Turn" : "AIs Turn");
-        } else { // PvP or AI vs AI
-            str.append((i == 0) ? "Player 1" : "Player 2");
-        }
-        str.append((i == 0) ? " (White)" : " (Black)");
-        if (playerTypes_[i] == AI_PLAYER) str.append(" calculating");
-        text.setString(str);
-
-        text.setOrigin(0, text.getLocalBounds().height/2);
-        text.setPosition(
-            x_ + margin_ + getTileSizeX()/8, 
-            y_+margin_/2
-        );
+        setPlayerType(i, playerTypes_[i]);
     }
 
     // init endGameText_
@@ -255,14 +235,19 @@ void ChessGrid::activateField(ChessField& field) {
     }
 }
 
-
 void doMoveAI(ChessGrid& grid) {
-    struct move m;
     struct board* b = grid.getBoard();
-    bestMoveMinimax(b, &m, 9, 5000);
-    grid.doMove(&m);
+    while (grid.getPlayerType(b->player-1) == AI_PLAYER) {
+        struct move m;
+        bestMoveMinimax(b, &m, 9, 5000);
+        grid.doMove(&m);
 
-    freeMinimaxMemory(0);
+        freeMinimaxMemory(0);
+    }
+}
+
+void ChessGrid::startAI() {
+    std::thread(doMoveAI, std::ref(*this)).detach();
 }
 
 void ChessGrid::updateCalculatingAnimation(sf::Text& text) {
@@ -296,10 +281,19 @@ void ChessGrid::resetCalculatingAnimation() {
 }
 
 void ChessGrid::checkForEndGame() {
-    if (isGameOver(&board_)) {
+    int state = isGameOver(&board_);
+    if (state) {
         std::string str = "";
-        str.append((board_.player == 1) ? "Black" : "White");
-        str.append(" wins!");
+        if (state == BLACKWON) {
+            str.append("Black wins!");
+        } else if (state == WHITEWON) {
+            str.append("White wins!");
+        }
+
+        if (state == DRAW) {       
+            str.append("Draw!");
+        }
+
         endGameText_.setString(str);
         
         endGameText_.setOrigin(endGameText_.getLocalBounds().width/2, endGameText_.getLocalBounds().height/2);
@@ -354,7 +348,7 @@ void ChessGrid::doMove(struct move* m) {
         std::cout << "  fen: " << fen;
     }
 
-    std::cout << std::endl;
+    if (verbosity > 0) std::cout << std::endl;
 }
 
 void ChessGrid::onMouseClick(sf::Vector2i& mousePos, const sf::Window& window) {
@@ -375,13 +369,43 @@ void ChessGrid::onMouseClick(sf::Vector2i& mousePos, const sf::Window& window) {
 
             resetCalculatingAnimation();
             if (playerTypes_[board_.player-1] == AI_PLAYER) {
-                std::thread(doMoveAI, std::ref(*this)).detach();
+                startAI();
             }
         } else {
             activateField(fields_[field->row_][field->col_]);
         }
         checkForEndGame();
     }
+}
+
+void ChessGrid::setPlayerType(int player, int type) {
+    playerTypes_[player] = type;
+
+    sf::Text& text = currentPlayerText_[player];
+    text.setFont(font_);
+    text.setCharacterSize(margin_/2);
+    text.setFillColor(fieldLabelColor_);
+    text.setStyle(sf::Text::Bold);
+
+    std::string str = "";
+    if ((playerTypes_[0] == HUMAN_PLAYER && playerTypes_[1] == AI_PLAYER) ||
+        (playerTypes_[0] == AI_PLAYER && playerTypes_[1] == HUMAN_PLAYER)) { // one player against AI
+        str.append((playerTypes_[player] == HUMAN_PLAYER) ? "Your Turn" : "AIs Turn");
+    } else { // PvP or AI vs AI
+        if (playerTypes_[0] == AI_PLAYER) str.append("AI ");
+        if (playerTypes_[0] == HUMAN_PLAYER) str.append("Player ");
+
+        str.append(std::to_string(player+1));
+    }
+    str.append((player == 0) ? " (White)" : " (Black)");
+    if (playerTypes_[player] == AI_PLAYER) str.append(" calculating");
+    text.setString(str);
+
+    text.setOrigin(0, text.getLocalBounds().height/2);
+    text.setPosition(
+        x_ + margin_ + getTileSizeX()/8, 
+        y_+margin_/2
+    );
 }
 
 void ChessGrid::setPiece(int row, int col, int character) {

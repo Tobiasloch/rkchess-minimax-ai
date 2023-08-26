@@ -5,6 +5,10 @@ int runGui(ChessGrid& chessGrid) {
     sf::RenderWindow window(sf::VideoMode(chessGrid.getWidth(), chessGrid.getHeight(), 1), "Racing Kings Chess");
     window.setFramerateLimit(30); // Set the framerate to 30 fps
 
+    if (chessGrid.getPlayerType(chessGrid.getBoard()->player-1) == AI_PLAYER) {
+        chessGrid.startAI();
+    }
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {

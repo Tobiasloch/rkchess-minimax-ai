@@ -1,6 +1,11 @@
 #ifndef BOARDCHECK_H_
 #define BOARDCHECK_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "board.h"
@@ -39,5 +44,10 @@ int inCheckFastCharacter(board* b, uint64_t characterMask, int index);
 int inCheckFastPlayer(board* b, int player);
 
 extern struct checkMasks* CHECK_MASKS[5];
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
