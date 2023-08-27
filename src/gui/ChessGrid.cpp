@@ -32,7 +32,7 @@ void ChessGrid::loadTextures() {
             svgImages_[i].loadFromFile(file);
             sf::Image image = svgImages_[i].rasterize(svgFactor_);
             textures_[i].loadFromImage(image);
-            std::cout << "texture size: (" << textures_[i].getSize().x << "," << textures_[i].getSize().y << ")" << std::endl;
+            // std::cout << "texture size: (" << textures_[i].getSize().x << "," << textures_[i].getSize().y << ")" << std::endl;
         #else
             textures_[i].loadFromFile(file);
         #endif
@@ -250,8 +250,10 @@ void doMoveAI(ChessGrid& grid) {
     grid.aiThreadCount_--;
 }
 
-void ChessGrid::startAI() {
-    std::thread(doMoveAI, std::ref(*this)).detach();
+void ChessGrid::startAI(bool join) {
+    std::thread thread(doMoveAI, std::ref(*this));
+    if (join) thread.join();
+    else thread.detach();
 }
 
 void ChessGrid::updateCalculatingAnimation(sf::Text& text) {
@@ -303,7 +305,7 @@ void ChessGrid::checkForEndGame() {
         if (state == DRAW) {       
             str.append("Draw!");
         }
-
+        
         endGameText_.setString(str);
         
         endGameText_.setOrigin(endGameText_.getLocalBounds().width/2, endGameText_.getLocalBounds().height/2);
@@ -332,6 +334,7 @@ void ChessGrid::doMove(struct move* m) {
     int character = getField(&board_, m->from);
 
     movePlayer(&board_, m);
+    lastMove_ = *m;
 
     int from_row = getGridSize()-1 - (m->from / getGridSize());
     int from_col = m->from % getGridSize();
@@ -346,19 +349,18 @@ void ChessGrid::doMove(struct move* m) {
 
 
     if (verbosity > 0) {
-        char buffer_from[5];
-        char buffer_to[5];
-        positionToUCI(buffer_from, m->from);
-        positionToUCI(buffer_to, m->to);
-        std::cout << buffer_from << "->" << buffer_to;
+        std::cout << toUci(m->from) << "->" << toUci(m->to);
     } 
     if (verbosity > 1) {
-        char fen[FEN_BUFFER_SIZE];
-        boardToFen(fen, &board_);
-        std::cout << "  fen: " << fen;
+        std::cout << "  fen: " << toFen();
     }
 
     if (verbosity > 0) std::cout << std::endl;
+
+    if (isGameOver(&board_)) {
+        resetActiveFields();
+        std::cout << "Game over" << std::endl;
+    }
 }
 
 void ChessGrid::onMouseClick(sf::Vector2i& mousePos, const sf::Window& window) {
@@ -416,6 +418,20 @@ void ChessGrid::setPlayerType(int player, int type) {
         x_ + margin_ + getTileSizeX()/8, 
         y_+margin_/2
     );
+}
+
+std::string ChessGrid::toUci(uint8_t position) {
+    std::string str = "";
+    char buffer[5];
+    positionToUCI(buffer, position);
+    str.append(buffer);
+    return str;
+}
+
+std::string ChessGrid::toFen() {
+    char fen[FEN_BUFFER_SIZE];
+    boardToFen(fen, &board_);
+    return std::string(fen);
 }
 
 void ChessGrid::setPiece(int row, int col, int character) {

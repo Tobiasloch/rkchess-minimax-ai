@@ -65,7 +65,7 @@ public:
 
     void checkForEndGame();
 
-    void startAI();
+    void startAI(bool join=false);
     void doMove(int from_row, int from_col, int to_row, int to_col);
     void doMove(struct move* m);
 
@@ -80,11 +80,15 @@ public:
     // getter for playertypes
     int getPlayerType(int player) const { return playerTypes_[player]; }
 
-    uint verbosity = 0; // 1: print moves, 2: print board and moves
+    std::string toFen();
+    std::string toUci(uint8_t position);
+
+    uint verbosity = 2; // 1: print moves, 2: print board and moves
 
     int aiMaxDepth = 9;
-    long aiMaxTime = 1000; // ms
+    long aiMaxTime = 5000; // ms
     int aiThreadCount_ = 0;
+    struct move lastMove_;
 private:
     int margin_ = 20;
     ChessField fields_[8][8];
