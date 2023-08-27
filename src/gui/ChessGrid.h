@@ -81,6 +81,10 @@ public:
     int getPlayerType(int player) const { return playerTypes_[player]; }
 
     uint verbosity = 0; // 1: print moves, 2: print board and moves
+
+    int aiMaxDepth = 9;
+    long aiMaxTime = 1000; // ms
+    int aiThreadCount_ = 0;
 private:
     int margin_ = 20;
     ChessField fields_[8][8];

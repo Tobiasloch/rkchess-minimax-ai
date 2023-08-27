@@ -236,14 +236,18 @@ void ChessGrid::activateField(ChessField& field) {
 }
 
 void doMoveAI(ChessGrid& grid) {
+    grid.aiThreadCount_++;
+
     struct board* b = grid.getBoard();
-    while (grid.getPlayerType(b->player-1) == AI_PLAYER) {
+    while (grid.getPlayerType(b->player-1) == AI_PLAYER && !isGameOver(b)) {
         struct move m;
-        bestMoveMinimax(b, &m, 9, 5000);
+        bestMoveMinimax(b, &m, grid.aiMaxDepth, grid.aiMaxTime);
         grid.doMove(&m);
 
         freeMinimaxMemory(0);
     }
+
+    grid.aiThreadCount_--;
 }
 
 void ChessGrid::startAI() {
@@ -258,6 +262,12 @@ void ChessGrid::updateCalculatingAnimation(sf::Text& text) {
     if (ms.count() - lastLoadingAnimationExection_ > loadingAnimationSpeed_) {
         lastLoadingAnimationExection_ = ms.count();
     } else {
+        return;
+    }
+
+    if (isGameOver(&board_)) {
+        setPlayerType(0, playerTypes_[0]);
+        setPlayerType(1, playerTypes_[1]);
         return;
     }
 
@@ -398,7 +408,7 @@ void ChessGrid::setPlayerType(int player, int type) {
         str.append(std::to_string(player+1));
     }
     str.append((player == 0) ? " (White)" : " (Black)");
-    if (playerTypes_[player] == AI_PLAYER) str.append(" calculating");
+    if (playerTypes_[player] == AI_PLAYER && !isGameOver(&board_)) str.append(" calculating");
     text.setString(str);
 
     text.setOrigin(0, text.getLocalBounds().height/2);
