@@ -72,6 +72,27 @@ int main(int argc, char** argv) {
         } // do not run gui 
         else if (strcmp(argv[i], "--no-gui") == 0) {
             startGui = false;
+        } 
+        else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+            std::cout << "Usage: ./rkchess [options] [fen]\n";
+            
+            std::cout << "\n  fen: FEN string defining a chess board\n";
+
+            std::cout << "\nOptions:\n";
+            std::cout << "  -v, --verbosity: Verbosity level\n";
+            std::cout << "  -t, --time-limit: Time limit for AI\n";
+            std::cout << "  -d, --depth: Depth limit for AI\n";
+            std::cout << "  --no-gui: Do not run GUI\n";
+            std::cout << "  --help, -h: Print this help message\n";
+            std::cout << "  --size: Size of the window\n";
+
+            std::cout << "\nModes:\n";
+            std::cout << "  -pvp: Player vs Player\n";
+            std::cout << "  -pve: Player vs AI\n";
+            std::cout << "  -evp: AI vs Player\n";
+            std::cout << "  -eve: AI vs AI\n";
+
+            return 0;
         }
         
         else { // fen string
