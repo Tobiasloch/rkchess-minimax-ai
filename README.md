@@ -1,6 +1,10 @@
-# rkchess-minimax-ai
+# Racing Kings Chess AI
 
-This is a racing kings chess ai. I was building it in a university project a few years ago. It was originally written in c. Now i added a cpp gui around it to make it usable again.
+<div align="center">
+  <img src="assets/rkchess-screenshot.png" alt="Racing Kings Chess Screenshot" />
+</div>
+
+This is a racing kings chess ai. I was building it in a university project a few years ago. It was originally written in c. Now i added a cpp gui around it to make it usable again. A good expanation for racing kings chess is given at [lichess.org](https://lichess.org/variant/racingKings).
 
 ## Usage
 
