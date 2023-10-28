@@ -28,7 +28,7 @@ struct checkMasks {
 };
 
 #ifdef TEST
-int maxRounds;
+extern int maxRounds;
 #endif
 
 

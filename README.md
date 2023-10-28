@@ -6,6 +6,21 @@
 
 This is a racing kings chess ai. I was building it in a university project a few years ago. It was originally written in c. Now i added a cpp gui around it to make it usable again. A good expanation for racing kings chess is given at [lichess.org](https://lichess.org/variant/racingKings).
 
+## AI Techniques
+
+Here a list of the used techniques:
+
+- Bitboards
+- Alpha-Beta Search
+- iterative depth search
+- Evaluation Table based on material value and positional values
+- Transposition Tables
+- Quiescence Search
+- start game tables
+- MTD(f)
+
+For a detailed description view i uploaded an excerpt from our project report into the repository. Here is the [Link](report.pdf)
+
 ## Usage
 
 Clone the project via the following command.
@@ -14,4 +29,4 @@ Clone the project via the following command.
 
 The project contains submodules. Therefore you have to use `--recurse-submodules`.
 
-Run `make` to compile the code. The binary is then in `./bin/rkchess`. To get information on how to use it run `./bin/rkchess --help`.
+Run `make` to compile the code. The binary is then in `./bin/rkchess`. To get information on how to use it run `./bin/rkchess --help`. The tests are in the binary `./bin/test`

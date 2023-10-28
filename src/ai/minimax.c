@@ -40,6 +40,8 @@ void (*movePlayerMinimax)(board*, struct move*);
 int (*gameOverCheckMinimax)(board*, board*);
 int (*inCheckMinimax)(struct board*);
 void (*sortMovesMinimax)(struct moveScores*, size_t);
+int (*inCheckPlayerMinimax)(struct board*, int);
+int (*inCheckCharacterMinimax)(struct board*, uint64_t, int);
 int minimaxHashCollisions = 0;
 
 struct boardMoveMap* bmm = NULL;

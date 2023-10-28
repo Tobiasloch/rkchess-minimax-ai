@@ -1,7 +1,7 @@
 #include "jsonLoader.h"
 
 
-int PRINT_JSON_FILE_OPENED = 1;
+int PRINT_JSON_FILE_OPENED = 0;
 
 json* load_json(char* path, size_t tokens) {
     if (PRINT_JSON_FILE_OPENED) printf("reading data from json %s\n", path);

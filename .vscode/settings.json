@@ -72,6 +72,18 @@
         "ratio": "cpp",
         "semaphore": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "chrono": "cpp",
+        "sstream": "cpp",
+        "aitest.h": "c",
+        "uthash.h": "c",
+        "assert.h": "c",
+        "cutest.h": "c",
+        "boardtest.h": "c",
+        "evaluationtest.h": "c",
+        "validmovestest.h": "c",
+        "moduletest.h": "c",
+        "string.h": "c",
+        "setjmp.h": "c"
     }
 }

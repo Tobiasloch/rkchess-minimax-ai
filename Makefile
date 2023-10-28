@@ -1,5 +1,6 @@
 # Install
 BIN=rkchess
+BINTEST=test
 CC=gcc
 CCPP=g++
 
@@ -10,48 +11,68 @@ BINDIR = bin
 OBJECTDIR = ${BINDIR}/obj
 
 # Flags
-# CFLAGS += -std=gnu11 -Wall -Wextra -pedantic -O2
-CPPFLAGS += -std=c++11
+# CFLAGS += -std=gnu11 -O2
 CFLAGS += -std=gnu11 -g #debug
-IFLAGS = -I $(LIBDIR) -I $(SRCDIR)
+CPPFLAGS += -std=c++11
+IFLAGS = -I ${LIBDIR} -I ${SRCDIR}
 
-SRCCPP = $(shell find $(SRCDIR) -type f -name "*.cpp")
-DEPENDSCPP := $(patsubst %.cpp,%.d,$(SRCCPP))
-SRCC = $(shell find $(SRCDIR) -not -path src/ai/tablebases/generateStartGameStatesmain.c -type f -name "*.c")
-DEPENDSC := $(patsubst %.cpp,%.d,$(SRCC))
-HEADERS = $(shell find $(SRCDIR) -type f -name "*.h")
+SRCCPP = ${shell find ${SRCDIR} -type f -name "*.cpp"}
+SRCC = ${shell find ${SRCDIR} -not -path src/ai/tablebases/generateStartGameStatesmain.c -type f -name "*.c"}
+TESTSRC = ${shell find ${TESTDIR} -type f -name "*.c"}
 
-LIBSVGSRC = $(shell find $(LIBDIR)/sf-svg/SFC -type f -name "*.cpp")
-LIBSRC = $(LIBDIR)/jsonLoader.c $(LIBDIR)/jsmn.c
-LIBSRCPP = $(LIBSVGSRC)
+LIBSVGSRC = ${shell find ${LIBDIR}/sf-svg/SFC -type f -name "*.cpp"}
+LIBSRC = ${LIBDIR}/jsonLoader.c ${LIBDIR}/jsmn.c
+LIBSRCTEST = ${LIBSRC} ${LIBDIR}/CuTest.c
+LIBSRCPP = ${LIBSVGSRC}
 
 # the OBJC from SRCC are in the folder ${OBJECTDIR} and have the same name and path from there SRCC
 OBJC = ${SRCC:%.c=${OBJECTDIR}/%.o} ${LIBSRC:%.c=${OBJECTDIR}/%.o}
+OBJTEST = ${TESTSRC:%.c=${OBJECTDIR}/%.o} ${LIBSRCTEST:%.c=${OBJECTDIR}/%.o}
 OBJCPP = ${SRCCPP:%.cpp=${OBJECTDIR}/%.o} ${LIBSRCPP:%.cpp=${OBJECTDIR}/%.o}
+DEP = ${OBJC:%.o=%.d} ${OBJCPP:%.o=%.d}
 
 CLIBS = -lm
 CPPLIBS = -lsfml-graphics -lsfml-window -lsfml-system -lm
 
-ifeq ($(OS),Windows_NT)
-BIN := $(BIN).exe
+ifeq (${OS},Windows_NT)
+BIN := ${BIN}.exe
+BINTEST := ${BINTEST}.exe
 endif
 
-.PHONE: all clean
+.PHONY: all clean test testRun rkchess
 
-all: ${BINDIR}/$(BIN)
+all: test rkchess
+rkchess: ${BINDIR}/${BIN}
+test: ${BINDIR}/${BINTEST}
 
-${BINDIR}/$(BIN): ${OBJC} ${OBJCPP}
+${BINDIR}/${BIN}: ${OBJC} ${OBJCPP}
 	@mkdir -p ${BINDIR}
-	rm -f ${BINDIR}/$(BIN)
-	$(CCPP) ${OBJC} ${OBJCPP} $(CPPFLAGS) -o $@ ${IFLAGS} ${CPPLIBS}
+	rm -f ${BINDIR}/${BIN}
+	${CCPP} $^ ${CPPFLAGS} -o $@ ${IFLAGS} ${CPPLIBS}
 
-${OBJC}: ${SRCC} ${HEADERS}
-	mkdir -p $(@D)
-	$(CC) $(CFLAGS) ${@:${OBJECTDIR}/%.o=%.c} -c -o $@ ${IFLAGS} ${CLIBS}
+${BINDIR}/${BINTEST}: ${OBJC} ${OBJTEST}
+	@mkdir -p ${BINDIR}
+	rm -f ${BINDIR}/${BINTEST}
+	${CC} $^ ${CPPFLAGS} -D TEST -o $@ ${IFLAGS} -I test ${CPPLIBS}
 
-${OBJCPP}: ${SRCCPP} ${HEADERS}
-	mkdir -p $(@D)
-	$(CCPP) $(CPPFLAGS) ${@:${OBJECTDIR}/%.o=%.cpp} -c -o $@ ${IFLAGS} ${CPPLIBS}
+testRun: test
+	${info Running tests...}
+	./${BINDIR}/${BINTEST}
+
+-include ${DEP}
+
+# ${OBJECTDIR}/%.o: %.c
+# 	mkdir -p ${@D}
+# 	${CC} ${CFLAGS} ${@:${OBJECTDIR}/%.o=%.c} -MMD -c -o $@ ${IFLAGS} ${LIBS}
+
+
+${OBJECTDIR}/%.o: %.c
+	mkdir -p ${@D}
+	${CC} ${CFLAGS} $< -MMD -c -o $@ ${IFLAGS} ${CLIBS}
+
+${OBJECTDIR}/%.o: %.cpp
+	mkdir -p ${@D}
+	${CCPP} ${CPPFLAGS} $< -MMD -c -o $@ ${IFLAGS} ${CPPLIBS}
 
 clean:
 	rm -rf ${BINDIR}
