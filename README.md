@@ -29,4 +29,8 @@ Clone the project via the following command.
 
 The project contains submodules. Therefore you have to use `--recurse-submodules`.
 
+The project uses the SFML library for the gui. You need to install it before you can compile the code. For a tutorial on this vist [sfml-dev.org](https://www.sfml-dev.org/tutorials/2.6/). On debian based systems you can simply run the following command:
+
+`sudo apt-get install libsfml-dev`
+
 Run `make` to compile the code. The binary is then in `./bin/rkchess`. To get information on how to use it run `./bin/rkchess --help`. The tests are in the binary `./bin/test`
