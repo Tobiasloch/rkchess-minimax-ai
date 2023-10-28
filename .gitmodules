@@ -1,9 +1,10 @@
 [submodule "sf-svg"]
-	path = lib/sf-svg
-	url = git@github.com:kamirr/sf-svg.git
+        path = lib/sf-svg
+        url = https://github.com/kamirr/sf-svg.git
 [submodule "uthash"]
-	path = lib/uthash
-	url = https://github.com/troydhanson/uthash
+        path = lib/uthash
+        url = https://github.com/troydhanson/uthash.git
 [submodule "lib/jsmn"]
-	path = lib/jsmn
-	url = git@github.com:zserge/jsmn.git
+        path = lib/jsmn
+        url = https://github.com/zserge/jsmn.git
+
