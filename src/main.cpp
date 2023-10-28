@@ -82,9 +82,9 @@ int main(int argc, char** argv) {
             std::cout << "  -v, --verbosity: Verbosity level\n";
             std::cout << "  -t, --time-limit: Time limit for AI\n";
             std::cout << "  -d, --depth: Depth limit for AI\n";
-            std::cout << "  --no-gui: Do not run GUI\n";
+            std::cout << "  --no-gui: Do not run GUI. Can be used to only get the best move for a given Situation\n";
             std::cout << "  --help, -h: Print this help message\n";
-            std::cout << "  --size: Size of the window\n";
+            std::cout << "  --size: resolution of the window in pixels\n";
 
             std::cout << "\nModes:\n";
             std::cout << "  -pvp: Player vs Player\n";
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
             return 0;
         }
         
-        else { // fen string
+        else if (strcmp(argv[i], "--size") != 0) { // fen string
             if (argv[i][0] == '-') {
                 std::cout << "Unknown argument: " << argv[i] << "\n";
                 return 1;
