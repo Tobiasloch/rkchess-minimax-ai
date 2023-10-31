@@ -1,3 +1,18 @@
+ifneq ($(words $(MAKECMDGOALS)),1)
+.DEFAULT_GOAL = all
+%:
+	@$(MAKE) $@ --no-print-directory -rRf $(firstword $(MAKEFILE_LIST))
+else
+ifndef ECHO
+T := $(shell $(MAKE) $(MAKECMDGOALS) --no-print-directory \
+      -nrRf $(firstword $(MAKEFILE_LIST)) \
+      ECHO="COUNTTHIS" | grep -c "COUNTTHIS")
+
+N := x
+C = $(words $N)$(eval N := x $N)
+ECHO = echo "`expr " [\`expr $C '*' 100 / $T\`" : '.*\(....\)$$'`%]"
+endif
+
 # Install
 BIN=rkchess
 BINTEST=test
@@ -41,38 +56,40 @@ endif
 
 .PHONY: all clean test testRun rkchess
 
-all: test rkchess
+all: rkchess test
+	@$(ECHO) All done
 rkchess: ${BINDIR}/${BIN}
 test: ${BINDIR}/${BINTEST}
 
 ${BINDIR}/${BIN}: ${OBJC} ${OBJCPP}
+	@$(ECHO) Linking $@
+	@rm -f ${BINDIR}/${BIN}
 	@mkdir -p ${BINDIR}
-	rm -f ${BINDIR}/${BIN}
-	${CCPP} $^ ${CPPFLAGS} -o $@ ${IFLAGS} ${CPPLIBS}
+	@${CCPP} $^ ${CPPFLAGS} -o $@ ${IFLAGS} ${CPPLIBS}
 
 ${BINDIR}/${BINTEST}: ${OBJC} ${OBJTEST}
+	@$(ECHO) Linking $@
+	@rm -f ${BINDIR}/${BINTEST}
 	@mkdir -p ${BINDIR}
-	rm -f ${BINDIR}/${BINTEST}
-	${CC} $^ ${CPPFLAGS} -D TEST -o $@ ${IFLAGS} -I test ${CPPLIBS}
+	@${CC} $^ ${CPPFLAGS} -D TEST -o $@ ${IFLAGS} -I test ${CPPLIBS}
 
 testRun: test
-	${info Running tests...}
-	./${BINDIR}/${BINTEST}
+	@$(ECHO) Running tests...
+	@./${BINDIR}/${BINTEST}
 
 -include ${DEP}
 
-# ${OBJECTDIR}/%.o: %.c
-# 	mkdir -p ${@D}
-# 	${CC} ${CFLAGS} ${@:${OBJECTDIR}/%.o=%.c} -MMD -c -o $@ ${IFLAGS} ${LIBS}
-
-
 ${OBJECTDIR}/%.o: %.c
-	mkdir -p ${@D}
-	${CC} ${CFLAGS} $< -MMD -c -o $@ ${IFLAGS} ${CLIBS}
+	@$(ECHO) Compiling $@
+	@mkdir -p ${@D}
+	@${CC} ${CFLAGS} $< -MMD -c -o $@ ${IFLAGS} ${CLIBS}
 
 ${OBJECTDIR}/%.o: %.cpp
-	mkdir -p ${@D}
-	${CCPP} ${CPPFLAGS} $< -MMD -c -o $@ ${IFLAGS} ${CPPLIBS}
+	@$(ECHO) Compiling $@
+	@mkdir -p ${@D}
+	@${CCPP} ${CPPFLAGS} $< -MMD -c -o $@ ${IFLAGS} ${CPPLIBS}
 
 clean:
 	rm -rf ${BINDIR}
+
+endif
